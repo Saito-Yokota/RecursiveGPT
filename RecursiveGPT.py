@@ -1,4 +1,6 @@
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=api_key)
 import os
 from tqdm import tqdm
 import sys
@@ -8,9 +10,8 @@ def process_chunk(prompt, chunk, output_path, model):
     with open(output_path, 'a') as output_file:
         messages = [{'role': 'system', 'content': 'I am a helpful assistant.'},
                 {'role': 'user', 'content': (prompt + ' '.join(chunk))}]
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=messages)
+        response = client.chat.completions.create(model=model,
+        messages=messages)
         response = response['choices'][0]['message']['content']
         output_file.write(response + '\n\n')
 
@@ -45,7 +46,6 @@ def split_file_to_chunks(prompt, input_path, output_path, chunk_size, model):
 
 if __name__ == '__main__':
     api_key = input('Enter your OpenAI API key: ')
-    openai.api_key = api_key
     # TODO: add checks for key validity
 
     model = input('Enter the model to be used (default: gpt-3.5-turbo, available: gpt-4): ')
